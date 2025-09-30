@@ -11,6 +11,7 @@ let countrySchema = new mongoose.Schema({
         default:Date.now()
     },
     user_id:String
+    // category_id:String
 })
 
 exports.CountryModel=mongoose.model('countries', countrySchema)

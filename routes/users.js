@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
-const { auth } = require("../middlewares/auth");
+const { auth, authAdmin } = require("../middlewares/auth");
 const { ValidateUser, UserModel, validateLogin, createToken } = require('../models/userModel');
 
 router.get("/", (req, res) => {
@@ -42,7 +42,7 @@ router.post("/login", async (req, res) => {
         if (!authPassword) {
             return res.status(401).json({ msg: "Invalid password ,code: 2" })
         }
-        let newToken = createToken(user._id);
+        let newToken = createToken(user);
         res.json({ token: newToken })
     } catch (error) {
         console.log(error);
@@ -67,5 +67,16 @@ router.get("/myProfile", auth, async (req, res) => {
     res.status(500).json({ msg: "err", error });
   }
 });
+
+router.get('/usersList', authAdmin, async (req, res) => {
+    try {
+        let data = await UserModel.find({}, { password: 0 });
+        res.status(200).json(data);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ msg: "Error", err });
+    }
+})
 
 module.exports = router;

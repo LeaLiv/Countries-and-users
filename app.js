@@ -5,6 +5,7 @@ const { routesInit } = require('./routes/config_routes')
 require('./db/mongoConnect')
 const app = express();
 const cors = require('cors');
+const { config } = require('./config/secret');
 app.use(cors());
 
 app.use(express.static(path.join(__dirname, "public")))
@@ -15,5 +16,5 @@ app.use(express.json());
 routesInit(app);
 const server = http.createServer(app);
 
-const port = process.env.PORT || "3008"
+const port = config.port || "3008"
 server.listen(port, () => console.log(`Listening on port ${port}`));
