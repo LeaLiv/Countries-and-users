@@ -17,9 +17,8 @@ router.get("/", auth, async (req, res) => {
 router.post("/", auth, async (req, res) => {
     let validBody = ValidateCountry(req.body)
     if (validBody.error) {
-        if(validBody.error.details)
-        res.status(400).json(validBody.error.details);
-        return;
+        // if (validBody.error.details)
+            return res.status(400).json(validBody.error.details);
     }
     try {
         let country = new CountryModel({
@@ -38,15 +37,16 @@ router.post("/", auth, async (req, res) => {
     }
 })
 router.delete("/:id", auth, async (req, res) => {
-    let user_id = req.tokenData._id;
-    let countryId = await CountryModel.findOne({ _id: req.params.id }, { user_id: 1 });
-    console.log(countryId);
-    if (user_id != countryId.user_id) {
-        return res.status(403).json({ msg: "Forbidden" })
-    }
+    // let user_id = req.tokenData._id;
+    // let countryId = await CountryModel.findOne({ _id: req.params.id }, { user_id: 1 });
+    // console.log(countryId);
+    // if (user_id != countryId.user_id) {
+    //     return res.status(403).json({ msg: "Forbidden" })
+    // }
     try {
         let delId = req.params.id;
-        const data = await CountryModel.findByIdAndDelete(delId);
+        // const data = await CountryModel.findByIdAndDelete(delId);
+        const data = await CountryModel.deleteOne({ _id: delId,user_id:req.tokenData._id });
         res.json(data)
     } catch (error) {
         console.log(error);
@@ -56,7 +56,7 @@ router.delete("/:id", auth, async (req, res) => {
 router.put("/:id", auth, async (req, res) => {
     delete req.body._id;
     req.body.user_id = req.tokenData._id;
-let validBody = ValidateCountry(req.body);
+    let validBody = ValidateCountry(req.body);
     if (validBody.error) {
         res.status(400).json(validBody.error.details);
         return;
@@ -69,10 +69,10 @@ let validBody = ValidateCountry(req.body);
     try {
         let id = req.params.id;
         let data = req.body;
-         let result = await CountryModel.updateOne(
-      { _id: req.params.id },
-      { ...validBody.value, date: new Date() }
-    );
+        let result = await CountryModel.updateOne(
+            { _id: req.params.id },
+            { ...validBody.value, date: new Date() }
+        );
         res.json(result);
     } catch (error) {
         console.log(err);
